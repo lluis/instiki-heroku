@@ -275,6 +275,14 @@ END_THM
 
   def test_have_latest_itex2mml  
 
+    assert_markup_parsed_as(
+      %{<p>equation <math class='maruku-mathml' display='i} +
+      %{nline' xmlns='http://www.w3.org/1998/Math/MathML'>} +
+      %{<msub><mo lspace='thinmathspace' rspace='thinmaths} +
+      %{pace'>\342\250\205</mo> <mi>i</mi></msub><msub><mi} +
+      %{>A</mi> <mi>i</mi></msub></math></p>},
+      "equation $\\bigsqcap_i A_i$")
+
       assert_markup_parsed_as(
         %{<p>equation <math class='maruku-mathml' displa} +
         %{y='inline' xmlns='http://www.w3.org/1998/Math/} +
@@ -448,13 +456,9 @@ END_THM
 
   def test_rdoc
     set_web_property :markup, :rdoc
-  
-    @revision = Revision.new(:page => @page, :content => '+hello+ that SmartEngineGUI', 
-        :author => Author.new('DavidHeinemeierHansson'))
-  
-    assert_equal "<tt>hello</tt> that <span class='newWikiWord'>Smart Engine GUI" +
-        "<a href='../show/SmartEngineGUI'>?</a></span>", 
-        x_test_renderer(@revision).display_content
+    re=Regexp.new("(<code>hello</code>|<tt>hello</tt>) that <span class='newWikiWord'>" +
+          "Smart Engine GUI<a href='\.\./show/SmartEngineGUI'>\\?</a></span>")
+    assert_match_markup_parsed_as(re, '+hello+ that SmartEngineGUI')
   end
   
 #  def test_content_with_auto_links
